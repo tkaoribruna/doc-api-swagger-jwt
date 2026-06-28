@@ -1,0 +1,332 @@
+﻿{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Tasks e Receitas",
+    "description": "API de usuários, receitas e categorias com autenticação JWT.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor Local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "Autenticar usuário",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "login": { "type": "string" },
+                  "senha": { "type": "string" }
+                },
+                "required": ["login", "senha"]
+              },
+              "example": {
+                "login": "admin",
+                "senha": "password"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token gerado com sucesso",
+            "content": {
+              "application/json": {
+                "example": { "token": "seu_token_aqui" }
+              }
+            }
+          },
+          "401": { "description": "Credenciais inválidas" },
+          "400": { "description": "Login e senha obrigatórios" }
+        }
+      }
+    },
+    "/usuarios": {
+      "get": {
+        "summary": "Listar usuários",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários",
+            "content": {
+              "application/json": {
+                "example": [
+                  { "id": 1, "nome": "Admin", "login": "admin", "email": "admin@example.com" }
+                ]
+              }
+            }
+          },
+          "401": { "description": "Token inválido ou ausente" }
+        }
+      },
+      "post": {
+        "summary": "Criar usuário",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": { "type": "string" },
+                  "login": { "type": "string" },
+                  "email": { "type": "string" }
+                },
+                "required": ["nome", "login", "email"]
+              },
+              "example": { "nome": "João", "login": "joao", "email": "joao@example.com" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Usuário criado" },
+          "400": { "description": "Campos obrigatórios faltando" }
+        }
+      }
+    },
+    "/usuarios/{id}": {
+      "get": {
+        "summary": "Obter usuário por id",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Usuário encontrado" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      },
+      "put": {
+        "summary": "Atualizar usuário",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": { "type": "string" },
+                  "login": { "type": "string" },
+                  "email": { "type": "string" }
+                },
+                "required": ["nome", "login", "email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Usuário atualizado" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Excluir usuário",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Usuário excluído" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      }
+    },
+    "/receitas": {
+      "get": {
+        "summary": "Listar receitas",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de receitas" }
+        }
+      },
+      "post": {
+        "summary": "Criar receita",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "titulo": { "type": "string" },
+                  "descricao": { "type": "string" },
+                  "categoriaId": { "type": "integer" }
+                },
+                "required": ["titulo", "descricao", "categoriaId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Receita criada" },
+          "400": { "description": "Campos obrigatórios faltando" }
+        }
+      }
+    },
+    "/receitas/{id}": {
+      "get": {
+        "summary": "Obter receita por id",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Receita encontrada" },
+          "404": { "description": "Receita não encontrada" }
+        }
+      },
+      "put": {
+        "summary": "Atualizar receita",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "titulo": { "type": "string" },
+                  "descricao": { "type": "string" },
+                  "categoriaId": { "type": "integer" }
+                },
+                "required": ["titulo", "descricao", "categoriaId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Receita atualizada" },
+          "404": { "description": "Receita não encontrada" }
+        }
+      },
+      "delete": {
+        "summary": "Excluir receita",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Receita excluída" },
+          "404": { "description": "Receita não encontrada" }
+        }
+      }
+    },
+    "/categorias": {
+      "get": {
+        "summary": "Listar categorias",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de categorias" }
+        }
+      },
+      "post": {
+        "summary": "Criar categoria",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": { "type": "string" }
+                },
+                "required": ["nome"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Categoria criada" },
+          "400": { "description": "Campo nome obrigatório" }
+        }
+      }
+    },
+    "/categorias/{id}": {
+      "get": {
+        "summary": "Obter categoria por id",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Categoria encontrada" },
+          "404": { "description": "Categoria não encontrada" }
+        }
+      },
+      "put": {
+        "summary": "Atualizar categoria",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": { "type": "string" }
+                },
+                "required": ["nome"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Categoria atualizada" },
+          "404": { "description": "Categoria não encontrada" }
+        }
+      },
+      "delete": {
+        "summary": "Excluir categoria",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "204": { "description": "Categoria excluída" },
+          "404": { "description": "Categoria não encontrada" }
+        }
+      }
+    },
+    "/categorias/{id}/receitas": {
+      "get": {
+        "summary": "Listar receitas por categoria",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Receitas da categoria" }
+        }
+      }
+    }
+  }
+}
